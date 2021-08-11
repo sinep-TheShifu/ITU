@@ -1,7 +1,7 @@
 # ITU Projekt 2020: README
 
 ## Tým: DeusVult!
-## Projekt: Automatický vypínač pre dektopovú a webovú aplikáciu
+## Projekt: Automatický vypínač pre desktopovú a webovú aplikáciu
 
 ### Súbory
 
