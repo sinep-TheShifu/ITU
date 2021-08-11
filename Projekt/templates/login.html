@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+
+<!-- HEAD -->
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login_style.css') }}" type="text/css"/>
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='pictures/logo.png') }}"/>
+  <title>Login</title>
+</head>
+
+<!-- BODY -->
+<body>
+
+  <!-- HEADER -->
+  <header id="h">
+    <div class="title">
+        Ultimate Shutdown tool 9000 eXtra
+    </div>
+    
+    <div class="header_settings">
+        <div id="myBtnInfo"></div>
+        <button onclick="dark_mode_toggle()" id="dm_btn">dark mode</button>
+    </div>            
+</header>
+
+  <!-- BACKGROUND -->
+  <div class="background_picture">
+
+    <!-- LOGIN -->
+    <div class="login_header">
+          <form action="{{ url_for('web_login') }}" name="loginForm" method="POST" autocomplete="on">
+              <div class="login_form" id="lf">
+                <label for="login">Name</label><br><br>
+                <input type="text" name="login" id="login" autocomplete="name" placeholder="Enter name..." required><br><br>
+
+                <label for="password">Password</label><br><br>
+                <input type="password" name="password" id="password" autocomplete="current-password" placeholder="Enter password..." required><br><br>
+
+                <button type="submit">Login</button>
+              </div>
+          </form>
+      </div>
+
+    <!-- INFORMATION -->
+    <div class="webapp_info">
+        <h1>Web Application</h1>
+    </div>
+  </div>
+
+  <!-- MODAL WINDOW INFO -->
+  <div id="myModalInfo" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h1>Information</h1>
+      <p>
+        This application enables user to execute certain processes on a remote server.
+      </p><br>
+      <ol>
+        <li>In order to use this application you have to login to a remote server via: <b>ssh -R 60606:localhost:60606 username@servername</b></li>
+        <li>Then the application can be run on a browser with address: <b>localhost:60606</b> or <b>127.0.0.1:60606</b></li>
+        <li>Now you have to login to that remote server and execute your wishes!</li>
+      </ol>
+    </div>
+  </div>
+</body>
+
+<!-- JAVASCRIPT -->
+<!-- MODAL WINDOW -->
+<script type="text/javascript">
+    /* MODAL WINDOWS */
+    /* Description */
+    // Get the modal
+    var modal = document.getElementById("myModalInfo");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("myBtnInfo");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on the button, open the modal
+    btn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    } 
+</script>
+
+<!-- DARK MODE -->
+<script type="text/javascript">
+  function dark_mode_toggle()
+  {
+    document.getElementById("h").classList.toggle("dark-mode-h");
+    document.getElementById("lf").classList.toggle("dark-mode");
+    document.getElementById("dm_btn").classList.toggle("bgc_1");
+  }
+</script>
+</html>

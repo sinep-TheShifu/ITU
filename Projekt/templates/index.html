@@ -1,0 +1,630 @@
+<!doctype html>
+<html>
+    <!-- HEAD -->
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/index_style.css') }}" type="text/css"/>
+        <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='pictures/logo.png') }}"/>
+        <title>Index</title>
+    </head>
+
+    <!-- BODY -->
+    <body>
+        <!-- HEADER -->
+        <header id="h">
+            <div class="title">
+                Ultimate Shutdown tool 9000 eXtra
+            </div>            
+            <div class="header_settings">
+                <div id="myBtnInfo"></div>
+                <button onclick="dark_mode_toggle()" id="dm_btn">dark mode</button>
+                <a href="{{ url_for('web_logout') }}">
+                    <button>Logout</button>
+                </a>
+            </div>            
+        </header>
+
+        <!-- BACKGROUND -->
+        <div class="background_picture">        
+
+        <!-- QUICK SETTINGS -->
+        <div id="quick_start">
+            <div class="quick_start_container" id="qsc">
+                <!-- Header -->
+                <div class="quick_start_row h1">
+                    <h1>Start</h1>
+                </div>
+                <!-- FORM -->
+                <form id="startForm" autocomplete="on">            
+                    <!-- Type -->
+                    <div class="quick_start_row">
+                        <label for="radio"><b>Choose type</b></label><br>
+
+                        <input type="radio" name="type" id="timer1" value="timer1">
+                        <label for="timer1">Execute at</label><br>
+
+                        <input type="radio" name="type" id="timer2" value="timer2">
+                        <label for="timer2" id="radio_timer2">Execute from</label>
+                    </div>
+                    <!-- Time input -->
+                    <div class="quick_start_row">
+                        <label for="time"><b>Set time</b></label><br>
+                        <input type="text" id="time" name="time" placeholder="hh:mm:ss">
+                    </div>
+                    <!-- Action -->
+                    <div class="quick_start_row">
+                        <label for="action"><b>Select action</b></label><br>
+
+                        <select name="action" id="action">
+                            <option value="Poweroff">Power off</option>
+                            <option value="Reboot">Reboot</option>
+                            <option value="Suspend">Suspend</option>
+                            <option value="Script">Script</option>
+                        </select>
+                    </div>
+                    <!-- Launch button -->
+                    <div class="quick_start_row">
+                        <a onclick="start()">
+                            <div id="on"></div>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ADVANCED SETTINGS -->
+        <div id="advanced_settings">
+            <div class="advanced_settings_container" id="asc">
+                <!-- Header -->
+                <div class="advanced_settings_row h1">
+                    <h1>Advanced Settings</h1>
+                </div>
+                <!-- FORM -->
+                <form action="#" id="form_advanced_settings" autocomplete="on">
+                    <!-- CPU -->
+                    <div class="advanced_settings_row">
+                        When CPU load drops below: 
+                        <input type="number" id="cpu_num" name="cpu_num" placeholder="Percentage">
+                        % for
+                        <input type="text" id="cpu_time" name="cpu_time" placeholder="hh:mm:ss">
+                    </div>
+                    <!-- RAM -->
+                    <div class="advanced_settings_row">
+                        When RAM load drops below: 
+                        <input type="number" id="ram_num" name="ram_num" placeholder="Percentage">
+                        % for
+                        <input type="text" id="ram_time" name="ram_time" placeholder="hh:mm:ss">
+                    </div>
+                    <!-- Network -->
+                    <div class="advanced_settings_row">
+                        When network transfer drops below:
+                        <input type="number" name="net_num" id="net_num" placeholder="kB">
+                        kb/s for 
+                        <input type="text" name="net_time" id="net_time" placeholder="hh:mm:ss">
+                    </div>
+                    <!-- Audio -->
+                    <div class="advanced_settings_row">
+                        When audio is not playing for 
+                        <input type="text" name="audio_time" id="audio_time" placeholder="hh:mm:ss">
+                    </div>
+                    <!-- Screen saver -->
+                    <div class="advanced_settings_row">
+                        When display is in screen saver mode for 
+                        <input type="text" name="screen_time" id="screen_time" placeholder="hh:mm:ss">
+                    </div>
+                    <!-- Script -->
+                    <div class="advanced_settings_row">
+                        Enter script
+                        <input type="text" name="script" id="script" placeholder="">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Running procccess -->
+        <div id="rp" class="run_proc">
+            <!-- Countdown title -->
+            <div class="run_row_main">
+                <h1>Timer</h1>
+            </div>
+
+            <!-- Countdown timer -->
+            <div class="run_row_main" id="countdown"></div>
+
+            <div class="run_row_main"><h1>Advanced Settings</h1></div>
+            <div class="run_row_side"> Running: <span id="settingsRunning"></span></div>
+            <div class="run_row_side"> Action: <span id="settingsAction"></span></div>
+            <div class="run_row_side">Time: <span id="settingsTime"></span></div>
+            <div class="run_row_side">Value: <span id="settingsValue"></span></div>
+            
+
+            <!-- Off Button -->
+            <div class="run_row_main">
+                <div id="off" onclick="stopBoth()"></div>
+            </div>
+        </div>
+    </div>
+
+        <!-- MODAL WINDOW INFO -->
+        <div id="myModalInfo" class="modal">
+          <div class="modal-content">
+              <span class="close">&times;</span>
+              <h1>Information</h1>
+              <p>
+                  This application enables you to run a quick start, where you can choose what time is it going to be executes, and what will be the process.
+              </p><br>
+              <p>
+                  There are also "Advanced Settings", if you wish to perform more complicated operations.
+              </p><br>
+              <p>
+                  Every setting is run by clicking on the green "On" button. After submition, you will see a screen with timer and settings which you have set.
+              </p>
+          </div>
+        </div>
+    </body>
+
+
+<!-- JavaScript -->
+<script type="text/javascript">
+    
+    /* Calls functions to stop timers */
+    function stopBoth()
+    {
+        stop("{{ url_for('stop_timer') }}");
+        stop("{{ url_for('stop_monitor') }}");
+    }
+
+    /* Stop Timer */
+    function stop(type)
+    {
+        try
+        {
+            var request = new XMLHttpRequest(); // Creating request
+            request.onreadystatechange = function() 
+            {
+                if (this.readyState == 4)
+                {
+                    if(this.status == 200)
+                    {
+                        alert("Timer is stopped.");
+                        hideTimer();
+                    }
+                    else
+                    {
+                        alert("Server response: " + this.status);
+                    }                
+                }
+            };
+            request.open("GET", type, true); // Inicializing request
+            request.send(); // Sending data
+        } 
+        catch (e)
+        {
+            alert(e.toString());
+        }
+    }
+
+    /* Countdown for advances settings*/
+    function countdownAdvanced()
+    {      
+        //document.getElementById("countdown").innerHTML = "None";                        
+        try
+        {
+            var request = new XMLHttpRequest(); // Creating request
+            request.onreadystatechange = function() {
+              if (this.readyState == 4)
+              {
+                    if(this.status == 200)
+                    {                        
+                        var obj = JSON.parse(this.responseText);
+                        
+                        document.getElementById("settingsRunning").innerHTML = obj[0].running;
+                        document.getElementById("settingsTime").innerHTML = obj[0].time;
+                        document.getElementById("settingsValue").innerHTML = obj[0].value;
+                        document.getElementById("settingsAction").innerHTML = obj[0].action;
+                    }
+                    else
+                    {
+                        alert("Error recieving information about advanced settings.");
+                    }                
+              }
+            };
+
+            request.open("GET", "{{ url_for('stat_monitor') }}", false); // Inicializing request                  
+            request.send(); // Sending data
+        } 
+        catch (e)
+        {
+            alert(e.toString());
+        }               
+    } 
+
+    /* Countdown */
+    function countdown()
+    {      
+        document.getElementById("countdown").innerHTML = "None";                        
+        try
+        {
+            var request = new XMLHttpRequest(); // Creating request
+            request.onreadystatechange = function() 
+            {
+                if (this.readyState == 4)
+                {
+                    if(this.status == 200)
+                    {
+                        // Turns off countdown if pressed off
+                        document.getElementById("off").addEventListener("click", ret);
+                        function ret()
+                        {
+                            time_passed = obj.time_left;
+                        }
+
+                        var obj = JSON.parse(this.responseText);
+                        var time_passed = 0;
+
+                        document.getElementById("countdownAction")
+    
+                        /* Countdown time */
+                        var x = setInterval(function()
+                        {                        
+                            var distance = obj.time_left - time_passed;                        
+                            document.getElementById("countdown").innerHTML = distance;                        
+                            time_passed = time_passed + 1;
+                        
+                            if(distance < 1)
+                            {
+                                clearInterval(x);
+                                document.getElementById("countdown").innerHTML = "Expired";
+                                hideTimer();
+                            }
+                        }, 1000);
+                    }
+                    else
+                    {
+                        alert("Error recieving time left.");
+                    }                
+                }
+            };
+
+            request.open("GET", "{{ url_for('stat_timer') }}", false); // Inicializing request                  
+            request.send(); // Sending data
+        } 
+        catch (e)
+        {
+            alert(e.toString());
+        }               
+    } 
+
+    /* Controling and calculating time input */
+    function getTime(time, type1)
+    {
+        /* Entered time variables*/
+        var hours = time[0] + time[1];
+        var minutes = time[3] + time[4];
+        var seconds = time[6] + time[7];
+        var enteredTime = hours * 60 * 60 + minutes * 60 + seconds * 1;
+
+        var result; // Result time which is set into object
+
+        var regex = new RegExp("[0-2][0-9]:[0-5][0-9]:[0-5][0-9]"); // Regex for time input
+        var currentDate = new Date(); // Current date 
+        var currentTime =  currentDate.getHours() * 60 * 60    
+                        + currentDate.getMinutes() * 60  
+                        + currentDate.getSeconds() * 1;
+
+        // Control time input
+        if(enteredTime > 86400 || regex.test(time) === false)
+        {
+            return "error";
+        }
+
+        // Execute at
+        if(type1 === true)
+        { 
+            if(currentTime > enteredTime)
+            { // Entered time is lower than current time
+                result = 86400 - currentTime + enteredTime;
+            }
+            else
+            { // Entered time is higher than current time
+                result = enteredTime - currentTime;
+            }   
+
+            return result; // Return result
+        }
+        // Execute from
+        else
+        { 
+            return enteredTime; // Return entered time
+        }
+    }
+
+    /* Parsing start form to JSON */
+    function startFormToJson() 
+    {
+        var obj = {time:null, action:null, script:null}; // JS object
+        var type1 = document.getElementById("timer1");  // Input for type1
+        var type2 = document.getElementById("timer2");  // Input for type2
+        var time = document.getElementById("time"); // Input for time
+        var action_elems = document.querySelectorAll("#startForm select"); // Action element
+
+        /* Not defined -> function returns null */
+        if(type1.checked == false && type2.checked == false && time.value == "")
+        {
+            return null;
+        }
+
+        /* Type is not set */
+        if(type1.checked == false && type2.checked == false)
+        { 
+            alert("Choose type!");
+            return null;
+        }
+
+        /* Time */
+        var time_result = getTime(time.value, type1.checked);
+        if(time_result == "error")
+        {
+           alert("Enter a valid time! Format: hh:mm:ss ");           
+           return null;
+        }
+        obj.time = time_result; // Set time into object
+
+        /* Action */
+        for (var i = 0, element; element = action_elems[i++];) 
+        {
+            obj.action = element.value;     
+        }
+
+        /* Script */
+        if(document.getElementById("script").value != "")
+        {
+            obj.script = document.getElementById("script").value;
+        }
+
+        /* Create JSON string from an object */
+        var jsonData = JSON.stringify(obj);
+
+        return jsonData;
+    }
+
+    /* SETTINGS FORM TO JSON */
+    function settingsFormToJson()
+    {
+        var obj = [{time:null, action:null, resource:null, value:null, script:null}];
+        var type = false;
+        var action_elems = document.querySelectorAll("#startForm select"); // Action element
+
+        if(document.getElementById("cpu_num").value == "" && document.getElementById("ram_num").value == "" 
+        && document.getElementById("net_num").value == "" && document.getElementById("audio_time").value == "" 
+        && document.getElementById("screen_time").value == "")
+        {
+            return null;
+        }
+
+        if(document.getElementById("cpu_num").value != "" && document.getElementById("cpu_time").value != "")
+        { // CPU           
+            obj[0].resource = "CPU";                
+            obj[0].value = document.getElementById("cpu_num").value;
+            obj[0].time = getTime(document.getElementById("cpu_time").value, type);
+            if(obj[0].time == "error")
+            {
+               return alert("Enter a valid time! Format: hh:mm:ss ");           
+            }           
+        }
+        else if(document.getElementById("ram_num").value != "" && document.getElementById("ram_time").value != "")
+        { // RAM           
+            obj[0].resource = "RAM";
+            obj[0].value = document.getElementById("ram_num").value;
+            obj[0].time = getTime(document.getElementById("ram_time").value, type);
+            if(obj[0].time == "error")
+            {
+               return alert("Enter a valid time! Format: hh:mm:ss ");           
+            }            
+        }
+        else if(document.getElementById("net_num").value != "" && document.getElementById("net_time").value != "")
+        { // Network 
+            obj[0].resource = "Network";
+            obj[0].value = document.getElementById("net_num").value;
+            obj[0].time = getTime(document.getElementById("net_time").value, type);
+            if(obj[0].time == "error")
+            {
+               return alert("Enter a valid time! Format: hh:mm:ss ");           
+            }            
+        }
+        else if(document.getElementById("audio_time").value != "")
+        { // Audio
+            obj[0].resource = "Sound";
+            obj[0].time = getTime(document.getElementById("audio_time").value, type);
+            if(obj[0].time == "error")
+            {
+               return alert("Enter a valid time! Format: hh:mm:ss ");           
+            }
+        }
+        else if(document.getElementById("screen_time").value != "")
+        { // Screen
+            obj[0].resource = "Screen";
+            obj[0].time = getTime(document.getElementById("screen_time").value, type);
+            if(obj[0].time == "error")
+            {
+               return alert("Enter a valid time! Format: hh:mm:ss ");           
+            }
+        }
+        
+        /* Script */
+        if(document.getElementById("script").value != "")
+        { 
+            obj[0].script = document.getElementById("script").value;
+        }
+
+        /* Action */
+        var action_elems = document.querySelectorAll("#startForm select"); // Action element
+        for (var i = 0, element; element = action_elems[i++];) 
+        {
+            obj[0].action = element.value;     
+        }
+
+        /* Create JSON string from an object */
+        var jsonData = JSON.stringify(obj);
+        
+        return jsonData;
+    }
+
+    /* Sending data to server */
+    function sendData(data, server)
+    {
+        try
+        {
+            var request = new XMLHttpRequest(); // Creating request
+
+            request.onreadystatechange = function() 
+            {
+                if (this.readyState == 4)
+                { // Response ready
+                    if(this.status == 200)
+                    { 
+                        if(server == "{{ url_for('start_timer') }}")
+                        { // Timer
+                            countdown();
+                        }
+                        else
+                        { // Settings
+                            var timer = setInterval(countdownAdvanced, 2000);
+
+                            var btn = document.getElementById("off");
+                            window.onclick = function(event) {
+                              if (event.target == btn) {
+                                clearInterval(timer);
+                              }
+                            } 
+                        }
+                    }
+                    else if(this.status == 400)
+                    { // 400 response -> application might be already running
+                        if(confirm("The timer is already running.\nWould you like to stop the timer?") == true)
+                        {
+                            stopBoth();
+                        }
+                        else
+                        {
+                            displayTimer();
+                            if(server == "{{ url_for('start_timer') }}")
+                            { // Timer
+                                countdown();
+                            }
+                            else
+                            { // Settings
+                                var timerA = setInterval(countdownAdvanced, 2000);
+
+                                var btnA = document.getElementById("off");
+                                window.onclick = function(event) {
+                                  if (event.target == btnA) {
+                                    clearInterval(timerA);
+                                  }
+                                } 
+                            }
+                        }
+                    }
+                    else
+                    { // Server error
+                        alert("Server response: " + this.status);                        
+                    }                
+                }
+            };
+
+            request.open("POST", server, true); // Inicializing request
+            request.setRequestHeader("Content-Type", "application/json;"); // Setting header 
+            request.send(data); // Sending data
+        } 
+        catch (e)
+        {
+            alert(e.toString());
+        }
+    }   
+
+    /* Displays timer */
+    function displayTimer()
+    {
+        document.getElementById("rp").style.display = "block";
+        document.getElementById("quick_start").style.display = "none";
+        document.getElementById("advanced_settings").style.display = "none";
+    }
+
+    /* Hide timer */
+    function hideTimer()
+    {
+        document.getElementById("rp").style.display = "none";
+        document.getElementById("quick_start").style.display = "block";
+        document.getElementById("advanced_settings").style.display = "block"; 
+    }
+
+    /* Leads the proccess of communicating with server */
+    function start()
+    {
+        var startObj, settingsObj;
+
+        startObj = startFormToJson();
+        settingsObj = settingsFormToJson();
+
+        if(startObj != null)
+        {
+            sendData(startObj, "{{ url_for('start_timer') }}");
+        }
+
+        if(settingsObj != null)
+        {
+            sendData(settingsObj, "{{ url_for('start_monitor') }}");
+        }
+        
+        if(startObj != null || settingsObj != null)
+        {
+            displayTimer();
+        }
+    }
+
+    //setInterval(countdownAdvanced, 3000);
+</script>
+
+<!-- DARK MODE JS -->
+<script type="text/javascript">
+    function dark_mode_toggle()
+    {
+        document.getElementById("qsc").classList.toggle("dark-mode");
+        document.getElementById("asc").classList.toggle("dark-mode");
+        document.getElementById("h").classList.toggle("dark-mode-h");
+        document.getElementById("rp").classList.toggle("dark-mode");
+        document.getElementById("dm_btn").classList.toggle("bgc_1");
+    }
+</script>
+
+<!-- MODAL WINDOW -->
+<script type="text/javascript">
+    /* MODAL WINDOWS */
+    /* Description */
+    // Get the modal
+    var modal = document.getElementById("myModalInfo");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("myBtnInfo");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on the button, open the modal
+    btn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    } 
+</script>
+</html>

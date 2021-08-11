@@ -1,0 +1,410 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* BUILD IN TAGS */
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+
+    color: #071A1E;
+    background-color: #071A1E;
+}
+
+h1 {
+    font-family: Helvetica, sans-serif, 'Courier new';
+    font-weight: bold;
+    font-size: 30px;
+    color: #074750;
+}
+
+button { 
+    height: 30px;
+    padding: 0 20px;
+    
+    border: none;
+    border-radius: 3px;    
+
+    font-weight: bold;  
+    font-size: 16px;
+    cursor: pointer;
+
+    color: #E7E8E9;
+    background-color: #074750;
+}
+
+button:hover {
+    background-color: #0b6a78;
+}
+
+input[type="text"]{
+    height: 35px;
+    width: 100px;
+}
+
+input[type="number"] {
+    height: 40px;
+    width: 150px;
+    padding: 0px 20px; 
+    border: none;
+    border-radius: 3px;
+}
+
+input[type="time"] {
+    height: 35px;
+    padding: 0 10px;
+    border: none;
+    border-radius: 3px;
+}
+
+input[type="number"]:hover, input[type="number"]:focus,
+input[type="time"]:hover, input[type="time"]:focus {
+    background-color: rgb(248, 246, 246);
+}
+
+select {
+    height: 40px;
+    width: 50%;
+    border: none;
+    border-radius: 3px;
+}
+
+option {
+    border: none;
+    border-radius: 3px;
+}
+
+/* HEADER */
+header {
+    height: 50px;
+    width: 100%;
+
+    float: left;
+    border-radius: 3px;
+
+    color: #074750;
+    background-color: #E7E8E9;
+}
+
+.title {
+    height: 100%;
+    width: 30%;
+
+    float: left;
+    text-align: center;
+    padding-top: 15px;
+
+    font-weight: bold;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;    
+}
+
+.header_settings {
+    width: 70%;
+
+    float: left;
+    padding: 10px 40px;
+
+    text-align: right;
+}
+
+#myBtnInfo {
+    height: 30px;
+    width: 30px;
+
+    position: absolute;
+    left: 0;
+
+    cursor: pointer;
+    background-image: url(../pictures/info1.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+#myBtnInfo:hover, #myBtnInfo:active {
+    background-image: url(../pictures/info2.png);
+}
+
+/* QUICK SETTINGS */
+#quick_start {
+    height: 100%;
+    width: 30%;
+
+    float: left;
+
+    text-align: center;
+}
+
+.quick_start_container {
+    height: 80%;
+    width: 80%;
+
+    float: left;
+    margin-top: 50px;
+    margin-left: 10%;
+
+    border-radius: 3px;
+    background-color: rgba(256,256,256,0.9);
+}
+
+#startForm {
+    display: inline;
+}
+
+.quick_start_row {
+    height: 22%;
+
+    padding-top: 12%;
+}
+
+#on {
+    height: 60px;
+    width: 60px;
+
+    display: table;
+    margin: 0 auto;
+    cursor: pointer;
+
+    background-image: url(../pictures/on1.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+#on:hover {
+    display: block;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background-image: url(../pictures/on2.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+/* ADVANCED SETTINGS */
+#advanced_settings {
+    height: 100%;
+    width: 70%;    
+
+    float: left;
+    text-align: center;
+}
+
+.advanced_settings_container {
+    height: 80%;
+    width: 80%;
+
+    float: left;
+    margin-top: 50px;
+    margin-left: 10%;
+
+    border-radius: 3px;
+    background-color: rgba(256,256,256,0.9);
+}
+
+#form_advanced_settings {
+    display: inline;
+}
+
+.advanced_settings_row {
+    height: 12%;
+
+    padding-top: 2%;
+}
+
+/* Process div */
+.run_proc {
+    height: auto;
+    width: 80%;
+
+    float: left;
+    margin-top: 50px;
+    margin-left: 10%;
+
+    text-align: center;
+    font-size: 20px;
+    border-radius: 3px;
+    background-color: rgba(256,256,256,0.9);
+
+    display: none;
+}
+
+.run_row_main {
+    width: 100%;
+
+    float: left;
+    padding: 15px;
+}
+
+.run_row_side {
+    height: 50px;
+    width: 100%;
+
+    float: left;
+}
+
+#countdown, #countdownAdvanced {
+    font-weight: bold;
+    font-size: 2em;
+    background-color: #071A1E;
+    color: red;
+}
+
+/* OFF Buton */
+#off {
+    height: 60px;
+    width: 60px;
+
+    display: table;
+    margin: 0 auto;
+    cursor: pointer;
+
+    background-image: url(../pictures/off2.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+#off:hover {
+    display: block;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background-image: url(../pictures/off1.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+/* The Modal Windows */
+/* Modal window for Members */
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content */
+  .modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+  
+  /* The Close Button */
+  .close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+
+/* CLASSES */
+
+.dark-mode {
+    background-color: rgb(0, 0, 0, 0.9);
+    color: #E7E8E9;
+}
+
+.dark-mode-h {
+    background-color: rgb(0, 0, 0, 0.9);
+}
+
+.h1 {
+    height: 12%;
+
+    padding-top: 20px;
+}
+
+.float_right {
+    float: right;
+}
+
+.background_picture {
+    height: 100%;
+    width: 100%;
+
+    float: left;
+
+    background-image: url(../pictures/backpic.jpg);
+    background-color: #cccccc;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+.bgc_1 {
+    background-color: #0b6a78;
+}
+
+/* RESPONSIVE DESIGN */
+@media screen and (max-width: 1225px) {
+    header {
+        height: 100px;
+    }
+
+    .title {
+        height: 50px;
+        width: 100%;
+    }
+
+    .header_settings {
+        height: 50px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .background_picture {
+        height: auto;
+    }
+
+    #quick_start {
+        height: auto;
+        width: 100%;
+    }
+
+    .quick_start_container {
+        height: auto;
+        padding: 15px;
+    }
+
+    #advanced_settings {
+        height: auto;
+        width: 100%;
+    }
+
+    .advanced_settings_container {
+        height: auto;
+        padding: 15px;
+    }
+
+    .advanced_settings_row {
+        padding-top: 30px;
+        height: 120px;
+    }
+}
+
+

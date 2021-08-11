@@ -1,0 +1,328 @@
+<!doctype html>
+<html>
+  <head>
+    <title>UST 9000 eXtra</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/roman_style.css')}}"/>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='pictures/rlogo.png')}}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <div class="modal" id="about">
+      <div class="modalContent">
+        <span class="closeButton" id="aboutClose">&times;</span>
+        <p>Use <span class="bold">Clock</span> to set <span class="bold">time at which</span> you want to perform an action.</p>
+        <p>Use <span class="bold">Timer</span> to set <span class="bold">how much time should pass until</span> you want to perform an action.</p>
+        <p>Use <span class="bold">Settings</span> to set <span class="bold">conditions at which </span> you want to perform an action.</p>
+        <br>
+        <p>Script executes if the conditions are met (e. g. timer has ran out). Then the action is performed.</p>
+        <p>Settings are updated at page reload. You need to <span class="bold">submit</span> changes to change them.</p>
+      </div>
+    </div>
+
+    {% set globalMessages = [] %}
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% if globalMessages.append('1') %}{% endif %}
+
+        <div class="modal displayed" id="flash">
+          <div class="modalContent">
+            <span class="closeButton" id="flashClose">&times;</span><br>
+            {% for message in messages %}
+                {{ message }}<br>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <header>
+      <div class="topMenu">
+        <button id="aboutOpen">About</button>
+        <a href="{{ url_for('roman_logout') }}"><button class="logoutButton">Logout</button></a>
+      </div>
+    </header>
+
+    <div class="leftColumn">
+      <div class="mainMenu">
+        <div class="tab">
+          <button class="tabLinks" onclick="openTab(event, 'clock')">Clock</button>
+          <button class="tabLinks" onclick="openTab(event, 'timer')">Timer</button>
+          <button class="tabLinks" onclick="openTab(event, 'settings')">Advanced settings</button>
+        </div>
+
+        <!-- Tab content -->
+        <div id="clock" class="tabContent defaultTab">
+          <div class="timeInputArea">
+            <label for="clockTime"><b>Set time</b></label><br><br>
+            <input type="text" id="clockTime" name="clockTime" placeholder="HH:MM:SS">
+          </div>
+          <div class="scriptInputArea">
+            <label for="clockScript"><b>Set script (Optional)</b></label><br><br>
+            <input type="text" id="clockScript" name="clockScript">
+          </div>
+          <div class="actionInputArea">
+            <label for="clockAction"><b>Select action</b></label><br><br>
+            <select id="clockAction" name="clockAction">
+              <option value="shutdown">Shutdown</option>
+              <option value="restart">Restart</option>
+              <option value="sleep">Sleep</option>
+              <option value="executeOnly">Execute only</option>
+            </select>
+          </div>
+          <div class="buttonArea">
+            <button class="anchored" onclick="startCountdown('clock')">Start</button>
+            <button class="anchored" onclick="stopCountdown()">Stop</button>
+          </div>
+        </div>
+
+        <div id="timer" class="tabContent">
+          <div class="timeInputArea">
+            <label for="timerTime"><b>Set time</b></label><br><br>
+            <input type="text" id="timerTime" name="timerTime" placeholder="HH:MM:SS">
+          </div>
+          <div class="scriptInputArea">
+            <label for="timerScript"><b>Set script (Optional)</b></label><br><br>
+            <input type="text" id="timerScript" name="timerScript">
+          </div>
+          <div class="actionInputArea">
+            <label for="timerAction"><b>Select action</b></label><br><br>
+            <select id="timerAction" name="timerAction">
+              <option value="shutdown">Shutdown</option>
+              <option value="restart">Restart</option>
+              <option value="sleep">Sleep</option>
+              <option value="executeOnly">Execute only</option>
+            </select>
+          </div>
+          <div class="buttonArea">
+            <button class="anchored" onclick="startCountdown('timer')">Start</button>
+            <button class="anchored" onclick="stopCountdown()">Stop</button>
+          </div>
+        </div>
+        <div id="settings" class="tabContent">
+          <div class="settingsInputArea">
+            Min CPU load <input type="number" id="cpuPercentage" name="cpuPercentage" placeholder="-">% for <input type="settingsText" id="cpuTime" name="cpuTime" placeholder="--:--:--"><br>
+            Min RAM load <input type="number" id="ramPercentage" name="ramPercentage" placeholder="-">% for <input type="settingsText" id="ramTime" name="ramTime" placeholder="--:--:--"><br>
+            Min Network transfer <input type="number" id="netPercentage" name="netPercentage" placeholder="-">kb/s for <input type="settingsText" id="netTime" name="netTime" placeholder="--:--:--"><br>
+            Min time without audio output <input type="settingsText" id="audioTime" name="audioTime" placeholder="--:--:--"><br>
+            Min time without screen output <input type="settingsText" id="videoTime" name="videoTime" placeholder="--:--:--"><br>
+          </div>
+          <div class="scriptInputArea">
+            <label for="settingsScript"><b>Set script (Optional)</b></label><br>
+            <input type="text" id="settingsScript" name="settingsScript">
+          </div>
+          <div class="actionInputArea">
+            <label for="settingsAction"><b>Select action</b></label><br>
+            <select id="settingsAction" name="settingsAction">
+              <option value="shutdown">Shutdown</option>
+              <option value="restart">Restart</option>
+              <option value="sleep">Sleep</option>
+              <option value="executeOnly">Execute only</option>
+            </select>
+          </div>
+          <div class="buttonArea">
+            <button class="anchored" onclick="changeSettings()">Submit settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rightColumn">
+      <div class="finalCountdown">
+        <div class="finalClock">
+          <h1>Next <mark id="currentAction">action</mark> will occur at</h1>
+          <h2 id="finalClockTime">--:--:--</h2>
+        </div>
+        <div class="finalTimer">
+          <h1>Remaining time</h1>
+          <h2 id="finalTimerTime">--:--:--</h2>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>Created by Roman Fulla &ltxfulla00&gt.
+         I don't own anything on this site. All rights go to their respective owners.
+         We use cookies for login purposes. We do not track your activity in any way.</p>
+    </footer>
+  </body>
+  <script type="text/javascript">
+    // About
+    var aboutModal = document.getElementById("about");
+    var aboutButton = document.getElementById("aboutOpen");
+    var aboutCloseButton = document.getElementById("aboutClose");
+    aboutButton.onclick = function() {
+      aboutModal.style.display = "block";
+    }
+    aboutCloseButton.onclick = function() {
+      aboutModal.style.display = "none";
+    }
+    window.onclick = function(event) {
+      if (event.target == aboutModal) {
+        aboutModal.style.display = "none";
+      }
+    }
+
+    // Flash
+    {% if globalMessages %}
+      var flashModal = document.getElementById("flash");
+      var flashCloseButton = document.getElementById("flashClose");
+      flashCloseButton.onclick = function() {
+        flashModal.style.display = "none";
+      }
+      window.onclick = function(event) {
+        if (event.target == flashModal) {
+          flashModal.style.display = "none";
+        }
+      }
+    {% endif %}
+
+    // Tabs
+    function openTab(evt, tabName) {
+      var i, tabContent, tabLinks;
+
+      tabContent = document.getElementsByClassName("tabContent");
+      for (i = 0; i < tabContent.length; i++) {
+        tabContent[i].style.display = "none";
+      }
+
+      tabLinks = document.getElementsByClassName("tabLinks");
+      for (i = 0; i < tabLinks.length; i++) {
+        tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+      }
+
+      document.getElementById(tabName).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+
+    // Countdown
+    function startCountdown(type) {
+      var obj = {time:null, action:null, script:null};
+      var time, actions, script;
+
+      if (type == "clock") {
+        time = document.getElementById("clockTime");
+        actions = document.querySelectorAll("#clock select");
+        script = document.getElementById("clockScript");
+
+        // Time
+        if (time.value == "") return null;
+        var timeResult = getTime(time.value, true); // Clock
+        if (timeResult == "error") return alert("Invalid time format.");
+        obj.time = timeResult;
+      }
+      else {  // type == "timer"
+        time = document.getElementById("timerTime");
+        actions = document.querySelectorAll("#timer select");
+        script = document.getElementById("timerScript");
+
+        // Time
+        if (time.value == "") return null;
+        var timeResult = getTime(time.value, false); // Timer
+        if (timeResult == "error") return alert("Invalid time format.");
+        obj.time = timeResult;
+      }
+
+      // Action
+      for (var i = 0, element; element = actions[i++];) {
+          switch (element.value) {
+            case "shutdown":
+              obj.action = "Poweroff";
+              break;
+            case "restart":
+              obj.action = "Reboot";
+              break;
+            case "sleep":
+              obj.action = "Suspend";
+              break;
+            default:
+              obj.action = "Script";
+          }
+      }
+
+      // Script
+      if(script.value != "") obj.script = script.value;
+
+      var jsonData = JSON.stringify(obj);
+      alert(jsonData);
+      sendData(jsonData, "{{ url_for('start_timer') }}");
+    }
+
+    // Change Settings
+    function changeSettings() {
+      var obj = {time:null, action:null, script:null};
+
+      // TODO settingsFormToJson();
+    }
+
+    // Transforms time according to user requirements
+    function getTime(time, type) {
+      var inputSeconds = time[0] * 3600 + time[1] * 3600 + time[3] * 60 + time[4] * 60 + time[6] * 1 + time[7] * 1;
+      if (inputSeconds > 86400) return "error";
+      var regex = new RegExp("[0-2][0-9]:[0-5][0-9]:[0-5][0-9]");
+      if (regex.test(time) === false) return "error";
+
+      var currentDate = new Date();
+      var currentSeconds = currentDate.getHours() * 3600 + currentDate.getMinutes() * 60 + currentDate.getSeconds() * 1;
+
+      if (type) { // Clock
+        var result;
+
+        if (currentSeconds > inputSeconds) result = 86400 - currentSeconds + inputSeconds;
+        else result = inputSeconds - currentSeconds;
+
+        return result;
+      }
+      else return inputSeconds; // Timer
+    }
+
+    // Sends data to server
+    function sendData(data, server) {
+      try {
+        var request = new XMLHttpRequest();
+
+        request.onreadystatechange = function() {
+          if (this.readyState == 4) {
+            if (this.status == 200) {
+              // Success!
+            }
+            else alert("Server response: " + this.status);
+          }
+        };
+
+        request.open("POST", server, true);
+        request.setRequestHeader("Content-Type", "application/json;");
+        request.send(data);
+      }
+      catch (e) {
+        alert(e.toString());
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </script>
+</html>
